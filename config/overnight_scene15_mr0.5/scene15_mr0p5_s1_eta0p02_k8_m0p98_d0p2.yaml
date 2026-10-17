@@ -1,0 +1,37 @@
+dataset: Scene15
+data_path: data
+data_norm: standard
+view_indices:
+- 1
+- 0
+n_views: 2
+n_classes: 15
+encoder_dim:
+- - 59
+  - 1024
+  - 1024
+  - 1024
+  - 128
+- - 20
+  - 1024
+  - 1024
+  - 1024
+  - 128
+batch_size: 512
+epochs: 200
+warmup_epochs: 20
+diagonal_epochs: 20
+blr: 0.0005
+min_blr: 0.0005
+weight_decay: 0.0
+momentum: 0.98
+temperature: 0.5
+drop_rate: 0.2
+m_ratio: 0.5
+device: cuda:0
+seed: 1
+output_dir: output/overnight_scene15_mr0.5/scene15_mr0p5_s1_eta0p02_k8_m0p98_d0p2
+init: diagonal
+steps: 8
+step_size: 0.02
+print_freq: 100

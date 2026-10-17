@@ -180,19 +180,18 @@ def load_dataset(args):
             f"actual={actual_dims}, configured={expected_dims}, source={source_path}"
         )
 
-    clean_ids = np.arange(len(labels), dtype=np.int64)
-    clean_align = np.ones(len(labels), dtype=np.int64)
     train_dataset = MultiviewDataset(
         noisy_data, labels, noisy_labels, id1, id2, is_align
     )
+    # Match the PLCI/CorreGen evaluation contract: evaluation sees the same
+    # correspondence-corrupted features and metadata as training.  The
+    # anchor labels remain clean; the disturbed-view labels/IDs stay aligned
+    # with the physically shuffled second-view features.
     test_dataset = MultiviewDataset(
-        [view.copy() for view in clean_data],
-        labels,
-        labels,
-        clean_ids,
-        clean_ids,
-        clean_align,
+        noisy_data, labels, noisy_labels, id1, id2, is_align
     )
     args.n_sample = len(labels)
     args.data_source = str(source_path)
+    args.eval_protocol = "same_correspondence_corruption_as_train"
+    args.eval_sampler = "RandomSampler_full_dataset"
     return train_dataset, test_dataset

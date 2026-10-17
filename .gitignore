@@ -1,31 +1,7 @@
-# Runtime and generated artifacts
 __pycache__/
 *.py[cod]
 .pytest_cache/
-.mypy_cache/
-
-# Local datasets and experiment artifacts
 data/*.mat
-data/*.h5
-data/*.npz
-logs/
 output/
-runs/
+logs/
 checkpoints/
-tuning_logs/
-*.log
-
-# Historical local backups and archived configs
-*.before_*.py
-*.before_*.md
-config/archive/
-*_nowarm*.yaml
-
-# Local environment and editor files
-.venv/
-venv/
-env/
-.idea/
-.vscode/
-.DS_Store
-Thumbs.db

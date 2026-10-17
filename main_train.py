@@ -2,7 +2,6 @@
 
 import argparse
 import copy
-import csv
 import datetime
 import os
 import time
@@ -23,27 +22,31 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 
 
 DEFAULTS = {
-    "n_views": 2, "epochs": 200, "warmup_epochs": 20,
+    "n_views": 2,
+    "epochs": 200,
+    "warmup_epochs": 20,
+    "diagonal_epochs": 20,
     "batch_size": 512,
-    "threads": 8, "num_workers": 0, "print_freq": 5,
-    "data_norm": "standard", "weight_decay": 0.0,
+    "train_time": 1,
+    "threads": 8,
+    "num_workers": 0,
+    "print_freq": 5,
+    "data_norm": "standard",
+    "weight_decay": 0.0,
     "momentum": 0.98,
-    "temperature": 0.5, "drop_rate": 0.2, "decoder_drop_rate": 0.0,
-    "blr": 5.0e-4, "min_blr": 5.0e-5,
-    # Public transport controls. Numerical solver settings are owned by
-    # transport_projector.py and are not valid YAML knobs.
-    "init": "diagonal", "steps": 5, "step_size": 0.02,
-    "structure_diagonal_only_teacher": False,
-    "structure_oracle_true_diagonal": False,
-    "structure_oracle_tii_threshold": 0.1,
-    "structure_oracle_quality_weighted": False,
-    "structure_debug_true_quality": False,
-    "qce_enabled": False, "qce_nu": 2.0, "qce_normalize": False,
-    "qce_reduction": "batch_mean", "qce_probability_mode": "global",
-    "qce_identity_target": False, "qce_disable_structure": False,
-    "lambda_intra_qce": 1.0, "lambda_inter_qce": 1.0,
-    "m_ratio": 0.0, "c_ratio": 0.0, "device": "cuda:0",
-    "pin_mem": True, "save_ckpt": False, "output_dir": "output",
+    "temperature": 0.5,
+    "drop_rate": 0.2,
+    "decoder_drop_rate": 0.0,
+    "blr": 5.0e-4,
+    "min_blr": 5.0e-4,
+    "init": "diagonal",
+    "steps": 5,
+    "step_size": 0.02,
+    "m_ratio": 0.0,
+    "device": "cuda:0",
+    "pin_mem": True,
+    "save_ckpt": False,
+    "output_dir": "output",
 }
 
 
@@ -57,11 +60,6 @@ def load_config(config_file):
         values = yaml.safe_load(handle) or {}
     if not isinstance(values, dict):
         raise ValueError("The YAML root must be a mapping")
-    if "train_time" in values:
-        raise ValueError(
-            "train_time is no longer a YAML option; use "
-            "--seeds 1 2 3 4 5 for multi-seed runs"
-        )
     unknown = sorted(set(values) - set(DEFAULTS) - {
         "dataset", "data_path", "encoder_dim", "n_classes", "seed",
         "view_indices", "experiment_id", "config_name",
@@ -79,29 +77,6 @@ def load_config(config_file):
     return SimpleNamespace(**merged)
 
 
-def _prepare_runtime_args(args):
-    """Resolve values derived from the YAML once per training invocation."""
-    args.embed_dim = args.encoder_dim[0][-1]
-    args.lr = args.blr * args.batch_size / 256.0
-    args.min_lr = args.min_blr * args.batch_size / 256.0
-    if args.min_lr > args.lr:
-        raise ValueError("min_blr must not exceed blr")
-
-
-def _seed_output_dir(base_output, seed, multi_seed):
-    base_output = Path(base_output)
-    return base_output / f"seed{seed}" if multi_seed else base_output
-
-
-def _write_summary(summary_path, rows):
-    summary_path.parent.mkdir(parents=True, exist_ok=True)
-    fields = ["seed", "epoch", "acc", "nmi", "ari", "car"]
-    with summary_path.open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=fields)
-        writer.writeheader()
-        writer.writerows(rows)
-
-
 def train_one_time(args, logger, train_id=0):
     utils.fix_random_seeds(args.seed)
     device = torch.device(args.device)
@@ -112,13 +87,18 @@ def train_one_time(args, logger, train_id=0):
 
     train_set, test_set = load_dataset(args)
     args.n_sample_test = len(test_set)
+    # Match CorreGen exactly: both loaders enumerate the complete dataset
+    # once per pass through RandomSampler.  This is a random permutation of
+    # all samples, not random-subset evaluation.
+    sampler_train = torch.utils.data.RandomSampler(train_set)
+    sampler_test = torch.utils.data.RandomSampler(test_set)
     train_loader = torch.utils.data.DataLoader(
-        train_set, batch_size=min(args.batch_size, len(train_set)),
-        shuffle=True, num_workers=args.num_workers,
-        pin_memory=args.pin_mem, drop_last=False,
+        train_set, sampler=sampler_train,
+        batch_size=min(args.batch_size, len(train_set)),
+        num_workers=args.num_workers, pin_memory=args.pin_mem, drop_last=False,
     )
     test_loader = torch.utils.data.DataLoader(
-        test_set, batch_size=min(512, len(test_set)), shuffle=False,
+        test_set, batch_size=min(512, len(test_set)), sampler=sampler_test,
         num_workers=args.num_workers, pin_memory=args.pin_mem, drop_last=False,
     )
 
@@ -160,62 +140,45 @@ def train_one_time(args, logger, train_id=0):
     return states
 
 
-def main(args, seeds=None):
-    seeds = [int(args.seed)] if seeds is None else [int(seed) for seed in seeds]
-    if not seeds:
-        raise ValueError("At least one seed is required")
-    if len(set(seeds)) != len(seeds):
-        raise ValueError(f"Duplicate seeds are not allowed: {seeds}")
+def main(args):
+    Path(args.output_dir).mkdir(parents=True, exist_ok=True)
+    args.visual_dir = str(Path(args.output_dir) / "visualize")
+    Path(args.visual_dir).mkdir(parents=True, exist_ok=True)
+    args.embed_dim = args.encoder_dim[0][-1]
+    # Treat blr/min_blr as the actual learning-rate values.  The previous
+    # linear batch-size scaling silently doubled the configured rate for the
+    # batch sizes used by the current experiments.
+    args.lr = args.blr
+    args.min_lr = args.min_blr
+    if args.min_lr > args.lr:
+        raise ValueError("min_blr must not exceed blr")
 
-    _prepare_runtime_args(args)
-    base_output = Path(args.output_dir)
-    base_output.mkdir(parents=True, exist_ok=True)
-    multi_seed = len(seeds) > 1
-    summary_rows = []
+    logger = utils.FileLogger(str(Path(args.output_dir) / "log_train.txt"))
+    logger.write(f"NEWSTRIDE config: {args.config_file}")
+    logger.write(f"Start time: {datetime.datetime.now().isoformat(timespec='seconds')}")
     started = time.time()
 
-    for seed in seeds:
-        run_args = copy.deepcopy(args)
-        run_args.seed = seed
-        run_args.output_dir = str(_seed_output_dir(base_output, seed, multi_seed))
-        run_args.visual_dir = str(Path(run_args.output_dir) / "visualize")
-        Path(run_args.output_dir).mkdir(parents=True, exist_ok=True)
-        Path(run_args.visual_dir).mkdir(parents=True, exist_ok=True)
+    result_rows = {}
+    for train_id in range(args.train_time):
+        states = train_one_time(args, logger, train_id)
+        for epoch, state in states.items():
+            result_rows.setdefault(epoch, []).append(state["k-means"])
+        args.seed += 1
 
-        logger = utils.FileLogger(str(Path(run_args.output_dir) / "log_train.txt"))
-        logger.write(f"NEWSTRIDE config: {run_args.config_file}")
-        logger.write(f"Seed: {seed}")
-        logger.write(f"Start time: {datetime.datetime.now().isoformat(timespec='seconds')}")
-        seed_started = time.time()
-        states = train_one_time(run_args, logger, train_id=0)
-        for epoch, state in sorted(states.items()):
-            result = state["k-means"]
-            summary_rows.append({
-                "seed": seed,
-                "epoch": epoch,
-                "acc": f"{result['acc'] * 100:.4f}",
-                "nmi": f"{result['nmi'] * 100:.4f}",
-                "ari": f"{result['ari'] * 100:.4f}",
-                "car": f"{result['car'] * 100:.4f}",
-            })
+    for epoch, rows in sorted(result_rows.items()):
         logger.write(
-            f"Seed {seed} training time: "
-            f"{datetime.timedelta(seconds=int(time.time() - seed_started))}"
+            f"Epoch {epoch}: title,acc,nmi,ari,car-------------\n"
+            "Average K-means Result   : "
+            f"ACC = {np.mean([r['acc'] for r in rows])*100:.2f} "
+            f"NMI = {np.mean([r['nmi'] for r in rows])*100:.2f} "
+            f"ARI = {np.mean([r['ari'] for r in rows])*100:.2f} "
+            f"CAR = {np.mean([r['car'] for r in rows])*100:.2f}"
         )
-
-    _write_summary(base_output / "summary.csv", summary_rows)
-    print(
-        f"Completed seeds={seeds}; summary={base_output / 'summary.csv'}; "
-        f"total_time={datetime.timedelta(seconds=int(time.time() - started))}"
-    )
+    logger.write(f"Total training time: {datetime.timedelta(seconds=int(time.time()-started))}")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="NEWSTRIDE: YAML-only training")
     parser.add_argument("--config_file", required=True)
-    parser.add_argument(
-        "--seeds", nargs="+", type=int, default=None,
-        help="Seeds to run. Omit for the single seed declared in YAML.",
-    )
     cli = parser.parse_args()
-    main(load_config(cli.config_file), seeds=cli.seeds)
+    main(load_config(cli.config_file))

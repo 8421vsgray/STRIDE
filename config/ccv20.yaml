@@ -1,29 +1,36 @@
-# NEWSTRIDE / CCV20
-# Fixed anchor: original X[1]; disturbed view: original X[2].
 dataset: CCV20
 data_path: data
 data_norm: l2-norm
-view_indices: [1, 2]
+view_indices:
+- 1
+- 2
 n_views: 2
 n_classes: 20
-encoder_dim: [[20, 1024, 1024, 1024, 128], [20, 1024, 1024, 1024, 128]]
-
+encoder_dim:
+- - 20
+  - 1024
+  - 1024
+  - 1024
+  - 128
+- - 20
+  - 1024
+  - 1024
+  - 1024
+  - 128
 batch_size: 512
 epochs: 200
 warmup_epochs: 20
-blr: 5.0e-4
-min_blr: 5.0e-4
+diagonal_epochs: 20
+blr: 0.0005
+min_blr: 0.0005
 weight_decay: 0.0
-momentum: 0.80
+momentum: 0.8
 temperature: 1.0
 drop_rate: 0.2
-
 m_ratio: 0.8
-c_ratio: 0.0
-init: diagonal
-steps: 5
-step_size: 0.02
-
 device: cuda:0
 seed: 1
 output_dir: output/ccv20
+init: diagonal
+steps: 5
+step_size: 0.02

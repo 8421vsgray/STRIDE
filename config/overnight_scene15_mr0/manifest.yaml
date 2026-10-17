@@ -1,0 +1,170 @@
+- name: scene15_mr0_s1_eta0p005_k5_m0p98_d0p2
+  mismatch_ratio: 0.0
+  parent: config\scene15_tune_mr08_s2_eta002_k5_fixedlr.yaml
+  hypothesis: Eta and diffusion depth are independent controls; smoother or stronger
+    diffusion may improve final stability.
+  step_size: 0.005
+  steps: 5
+  momentum: 0.98
+  drop_rate: 0.2
+  seed: 1
+- name: scene15_mr0_s1_eta0p01_k5_m0p98_d0p2
+  mismatch_ratio: 0.0
+  parent: config\scene15_tune_mr08_s2_eta002_k5_fixedlr.yaml
+  hypothesis: Eta and diffusion depth are independent controls; smoother or stronger
+    diffusion may improve final stability.
+  step_size: 0.01
+  steps: 5
+  momentum: 0.98
+  drop_rate: 0.2
+  seed: 1
+- name: scene15_mr0_s1_eta0p015_k5_m0p98_d0p2
+  mismatch_ratio: 0.0
+  parent: config\scene15_tune_mr08_s2_eta002_k5_fixedlr.yaml
+  hypothesis: Eta and diffusion depth are independent controls; smoother or stronger
+    diffusion may improve final stability.
+  step_size: 0.015
+  steps: 5
+  momentum: 0.98
+  drop_rate: 0.2
+  seed: 1
+- name: scene15_mr0_s1_eta0p02_k5_m0p98_d0p2
+  mismatch_ratio: 0.0
+  parent: config\scene15_tune_mr08_s2_eta002_k5_fixedlr.yaml
+  hypothesis: Eta and diffusion depth are independent controls; smoother or stronger
+    diffusion may improve final stability.
+  step_size: 0.02
+  steps: 5
+  momentum: 0.98
+  drop_rate: 0.2
+  seed: 1
+- name: scene15_mr0_s1_eta0p03_k5_m0p98_d0p2
+  mismatch_ratio: 0.0
+  parent: config\scene15_tune_mr08_s2_eta002_k5_fixedlr.yaml
+  hypothesis: Eta and diffusion depth are independent controls; smoother or stronger
+    diffusion may improve final stability.
+  step_size: 0.03
+  steps: 5
+  momentum: 0.98
+  drop_rate: 0.2
+  seed: 1
+- name: scene15_mr0_s1_eta0p01_k8_m0p98_d0p2
+  mismatch_ratio: 0.0
+  parent: config\scene15_tune_mr08_s2_eta002_k5_fixedlr.yaml
+  hypothesis: Eta and diffusion depth are independent controls; smoother or stronger
+    diffusion may improve final stability.
+  step_size: 0.01
+  steps: 8
+  momentum: 0.98
+  drop_rate: 0.2
+  seed: 1
+- name: scene15_mr0_s1_eta0p015_k8_m0p98_d0p2
+  mismatch_ratio: 0.0
+  parent: config\scene15_tune_mr08_s2_eta002_k5_fixedlr.yaml
+  hypothesis: Eta and diffusion depth are independent controls; smoother or stronger
+    diffusion may improve final stability.
+  step_size: 0.015
+  steps: 8
+  momentum: 0.98
+  drop_rate: 0.2
+  seed: 1
+- name: scene15_mr0_s1_eta0p02_k8_m0p98_d0p2
+  mismatch_ratio: 0.0
+  parent: config\scene15_tune_mr08_s2_eta002_k5_fixedlr.yaml
+  hypothesis: Eta and diffusion depth are independent controls; smoother or stronger
+    diffusion may improve final stability.
+  step_size: 0.02
+  steps: 8
+  momentum: 0.98
+  drop_rate: 0.2
+  seed: 1
+- name: scene15_mr0_s1_eta0p01_k12_m0p98_d0p2
+  mismatch_ratio: 0.0
+  parent: config\scene15_tune_mr08_s2_eta002_k5_fixedlr.yaml
+  hypothesis: Eta and diffusion depth are independent controls; smoother or stronger
+    diffusion may improve final stability.
+  step_size: 0.01
+  steps: 12
+  momentum: 0.98
+  drop_rate: 0.2
+  seed: 1
+- name: scene15_mr0_s1_eta0p015_k12_m0p98_d0p2
+  mismatch_ratio: 0.0
+  parent: config\scene15_tune_mr08_s2_eta002_k5_fixedlr.yaml
+  hypothesis: Eta and diffusion depth are independent controls; smoother or stronger
+    diffusion may improve final stability.
+  step_size: 0.015
+  steps: 12
+  momentum: 0.98
+  drop_rate: 0.2
+  seed: 1
+- name: scene15_mr0_s1_eta0p02_k12_m0p98_d0p2
+  mismatch_ratio: 0.0
+  parent: config\scene15_tune_mr08_s2_eta002_k5_fixedlr.yaml
+  hypothesis: Eta and diffusion depth are independent controls; smoother or stronger
+    diffusion may improve final stability.
+  step_size: 0.02
+  steps: 12
+  momentum: 0.98
+  drop_rate: 0.2
+  seed: 1
+- name: scene15_mr0_s1_eta0p02_k3_m0p98_d0p2
+  mismatch_ratio: 0.0
+  parent: config\scene15_tune_mr08_s2_eta002_k5_fixedlr.yaml
+  hypothesis: Eta and diffusion depth are independent controls; smoother or stronger
+    diffusion may improve final stability.
+  step_size: 0.02
+  steps: 3
+  momentum: 0.98
+  drop_rate: 0.2
+  seed: 1
+- name: scene15_mr0_s1_eta0p03_k3_m0p98_d0p2
+  mismatch_ratio: 0.0
+  parent: config\scene15_tune_mr08_s2_eta002_k5_fixedlr.yaml
+  hypothesis: Eta and diffusion depth are independent controls; smoother or stronger
+    diffusion may improve final stability.
+  step_size: 0.03
+  steps: 3
+  momentum: 0.98
+  drop_rate: 0.2
+  seed: 1
+- name: scene15_mr0_s1_eta0p02_k5_m0p99_d0p2
+  mismatch_ratio: 0.0
+  parent: config\scene15_tune_mr08_s2_eta002_k5_fixedlr.yaml
+  hypothesis: Eta and diffusion depth are independent controls; smoother or stronger
+    diffusion may improve final stability.
+  step_size: 0.02
+  steps: 5
+  momentum: 0.99
+  drop_rate: 0.2
+  seed: 1
+- name: scene15_mr0_s1_eta0p02_k5_m0p995_d0p2
+  mismatch_ratio: 0.0
+  parent: config\scene15_tune_mr08_s2_eta002_k5_fixedlr.yaml
+  hypothesis: Eta and diffusion depth are independent controls; smoother or stronger
+    diffusion may improve final stability.
+  step_size: 0.02
+  steps: 5
+  momentum: 0.995
+  drop_rate: 0.2
+  seed: 1
+- name: scene15_mr0_s1_eta0p02_k5_m0p98_d0p3
+  mismatch_ratio: 0.0
+  parent: config\scene15_tune_mr08_s2_eta002_k5_fixedlr.yaml
+  hypothesis: Eta and diffusion depth are independent controls; smoother or stronger
+    diffusion may improve final stability.
+  step_size: 0.02
+  steps: 5
+  momentum: 0.98
+  drop_rate: 0.3
+  seed: 1
+- name: scene15_mr0_s1_eta0p02_k5_m0p99_d0p3
+  mismatch_ratio: 0.0
+  parent: config\scene15_tune_mr08_s2_eta002_k5_fixedlr.yaml
+  hypothesis: Eta and diffusion depth are independent controls; smoother or stronger
+    diffusion may improve final stability.
+  step_size: 0.02
+  steps: 5
+  momentum: 0.99
+  drop_rate: 0.3
+  seed: 1

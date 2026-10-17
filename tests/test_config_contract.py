@@ -16,7 +16,7 @@ def test_all_configs_are_yaml_and_have_explicit_views():
         assert config["n_views"] == 2
         assert len(config["view_indices"]) == 2
         assert len(config["encoder_dim"]) == 2
-        assert config["warmup_epochs"] == WARMUP_EPOCHS[name]
+        assert config["diagonal_epochs"] == WARMUP_EPOCHS[name]
         assert config["init"] == "diagonal"
 
 

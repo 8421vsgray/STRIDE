@@ -1,0 +1,36 @@
+dataset: Handwritten
+data_path: data
+data_norm: standard
+view_indices:
+- 0
+- 1
+n_views: 2
+n_classes: 10
+encoder_dim:
+- - 240
+  - 1024
+  - 1024
+  - 1024
+  - 128
+- - 76
+  - 1024
+  - 1024
+  - 1024
+  - 128
+batch_size: 1024
+epochs: 200
+warmup_epochs: 20
+diagonal_epochs: 20
+blr: 0.0002
+min_blr: 0.0002
+weight_decay: 0.0
+momentum: 0.98
+temperature: 0.5
+drop_rate: 0.2
+m_ratio: 0.0
+device: cuda:0
+seed: 4
+output_dir: output/handwritten_mr00_seed4
+init: diagonal
+steps: 5
+step_size: 0.02
