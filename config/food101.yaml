@@ -1,0 +1,29 @@
+# NEWSTRIDE / UMPC-Food101
+# Fixed anchor: image features; disturbed view: text features.
+dataset: Food101
+data_path: data
+data_norm: standard
+view_indices: [0, 1]
+n_views: 2
+n_classes: 101
+encoder_dim: [[768, 1024, 1024, 1024, 128], [768, 1024, 1024, 1024, 128]]
+
+batch_size: 1024
+epochs: 200
+warmup_epochs: 30
+blr: 5.0e-4
+min_blr: 5.0e-4
+weight_decay: 0.0
+momentum: 0.995
+temperature: 0.5
+drop_rate: 0.2
+
+m_ratio: 0.8
+c_ratio: 0.0
+init: diagonal
+steps: 8
+step_size: 0.01
+
+device: cuda:0
+seed: 1
+output_dir: output/food101

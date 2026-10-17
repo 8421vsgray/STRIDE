@@ -1,0 +1,30 @@
+# NEWSTRIDE / Handwritten
+# Fixed anchor: original X[0] Pixel (240-D); disturbed view: original X[1]
+# Fourier (76-D).  This is intentional; do not replace it with [0, 1].
+dataset: Handwritten
+data_path: data
+data_norm: standard
+view_indices: [0, 1]
+n_views: 2
+n_classes: 10
+encoder_dim: [[240, 1024, 1024, 1024, 128], [76, 1024, 1024, 1024, 128]]
+
+batch_size: 1024
+epochs: 200
+warmup_epochs: 20
+blr: 2.0e-4
+min_blr: 2.0e-4
+weight_decay: 0.0
+momentum: 0.98
+temperature: 0.5
+drop_rate: 0.2
+
+m_ratio: 0.8
+c_ratio: 0.0
+init: diagonal
+steps: 5
+step_size: 0.02
+
+device: cuda:0
+seed: 1
+output_dir: output/handwritten

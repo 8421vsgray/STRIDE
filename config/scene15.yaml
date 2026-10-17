@@ -1,0 +1,29 @@
+# NEWSTRIDE / Scene15
+# Fixed anchor: original X[1] (59-D); disturbed view: original X[0] (20-D).
+dataset: Scene15
+data_path: data
+data_norm: standard
+view_indices: [1, 0]
+n_views: 2
+n_classes: 15
+encoder_dim: [[59, 1024, 1024, 1024, 128], [20, 1024, 1024, 1024, 128]]
+
+batch_size: 512
+epochs: 200
+warmup_epochs: 20
+blr: 5.0e-4
+min_blr: 5.0e-4
+weight_decay: 0.0
+momentum: 0.98
+temperature: 0.5
+drop_rate: 0.3
+
+m_ratio: 0.8
+c_ratio: 0.0
+init: diagonal
+steps: 3
+step_size: 0.04
+
+device: cuda:0
+seed: 1
+output_dir: output/scene15
